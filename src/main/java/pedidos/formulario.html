@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabeza('Nuevo pedido')}"></head>
+<body>
+<header th:replace="~{fragments/plantilla :: menu('pedidos')}"></header>
+
+<main class="contenedor">
+    <div class="encabezado">
+        <h1>Nuevo pedido</h1>
+    </div>
+
+    <div th:replace="~{fragments/plantilla :: alertas}"></div>
+
+    <div class="tarjeta">
+        <form th:action="@{/pedidos/guardar}" th:object="${pedido}" method="post" class="formulario">
+            <h3 class="subtitulo">Datos de la entrega</h3>
+            <div class="campo">
+                <label for="idCliente">Cliente</label>
+                <select id="idCliente" th:field="*{idCliente}" required>
+                    <option value="">Selecciona...</option>
+                    <option th:each="c : ${clientes}" th:value="${c.idCliente}" th:text="${c.nombre}">Laura</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="fechaHoraEntrega">Fecha y hora de entrega</label>
+                <input type="datetime-local" id="fechaHoraEntrega" th:field="*{fechaHoraEntrega}" required>
+            </div>
+            <div class="campo">
+                <label for="ocasion">Ocasión</label>
+                <input type="text" id="ocasion" th:field="*{ocasion}" placeholder="Cumpleaños">
+            </div>
+            <div class="campo campo-ancho">
+                <label for="direccionEntrega">Dirección de entrega</label>
+                <input type="text" id="direccionEntrega" th:field="*{direccionEntrega}" required placeholder="Carrera 70 # 44-10, Medellín">
+            </div>
+
+            <h3 class="subtitulo">Arreglos (llena al menos uno; las filas vacías no se envían)</h3>
+            <div class="campo-ancho arreglo" th:each="arreglo, i : *{arreglos}">
+                <div class="campo">
+                    <label th:for="'tipo' + ${i.index}" th:text="'Arreglo ' + ${i.count} + ': tipo'">Tipo</label>
+                    <input type="text" th:id="'tipo' + ${i.index}" th:field="*{arreglos[__${i.index}__].tipoArreglo}" placeholder="Ramo, caja, canasta...">
+                </div>
+                <div class="campo">
+                    <label th:for="'tamano' + ${i.index}">Tamaño</label>
+                    <select th:id="'tamano' + ${i.index}" th:field="*{arreglos[__${i.index}__].tamano}">
+                        <option value="">-</option>
+                        <option value="PEQUENO">Pequeño</option>
+                        <option value="MEDIANO">Mediano</option>
+                        <option value="GRANDE">Grande</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label th:for="'colores' + ${i.index}">Colores</label>
+                    <input type="text" th:id="'colores' + ${i.index}" th:field="*{arreglos[__${i.index}__].colores}" placeholder="Rosado y blanco">
+                </div>
+                <div class="campo">
+                    <label th:for="'valor' + ${i.index}">Valor</label>
+                    <input type="number" th:id="'valor' + ${i.index}" th:field="*{arreglos[__${i.index}__].valorUnitario}" min="1" step="any" placeholder="85000">
+                </div>
+                <div class="campo campo-ancho">
+                    <label th:for="'descripcion' + ${i.index}">Descripción</label>
+                    <input type="text" th:id="'descripcion' + ${i.index}" th:field="*{arreglos[__${i.index}__].descripcion}" placeholder="12 rosas con follaje">
+                </div>
+            </div>
+
+            <h3 class="subtitulo">Tarjeta de dedicatoria (opcional)</h3>
+            <div class="campo campo-ancho">
+                <label for="mensajeTarjeta">Mensaje (máximo 200 caracteres)</label>
+                <textarea id="mensajeTarjeta" name="mensajeTarjeta" maxlength="200" rows="3"
+                          th:text="${tarjeta.mensaje}" placeholder="¡Feliz cumpleaños, mamá!"></textarea>
+            </div>
+            <div class="campo">
+                <label for="remitenteTarjeta">De parte de</label>
+                <input type="text" id="remitenteTarjeta" name="remitenteTarjeta" maxlength="80"
+                       th:value="${tarjeta.remitente}" placeholder="Tus hijos">
+            </div>
+
+            <div class="botones-formulario">
+                <button type="submit" class="boton">Registrar pedido</button>
+                <a th:href="@{/pedidos}" class="boton boton-borde">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/plantilla :: pie}"></footer>
+</body>
+</html>
