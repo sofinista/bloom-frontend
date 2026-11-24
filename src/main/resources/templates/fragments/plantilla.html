@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="cabeza(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' · Floristería Bloom'">Floristería Bloom</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bloom.css}">
+</head>
+
+<body>
+
+<header th:fragment="menu(activo)" class="barra">
+    <a th:href="@{/}" class="marca">🌸 Bloom</a>
+    <nav class="menu">
+        <a th:href="@{/}" th:classappend="${activo == 'inicio'} ? 'activo'">Inicio</a>
+        <a th:href="@{/clientes}" th:classappend="${activo == 'clientes'} ? 'activo'">Clientes</a>
+        <a th:href="@{/flores}" th:classappend="${activo == 'flores'} ? 'activo'">Flores</a>
+        <a th:href="@{/pedidos}" th:classappend="${activo == 'pedidos'} ? 'activo'">Pedidos</a>
+    </nav>
+</header>
+
+<div th:fragment="alertas">
+    <div th:if="${exito}" class="alerta alerta-exito" th:text="${exito}">Guardado</div>
+    <div th:if="${error}" class="alerta alerta-error" th:text="${error}">Error</div>
+</div>
+
+<footer th:fragment="pie" class="pie">
+    Floristería Bloom · Medellín · Hecho con Spring Boot y Thymeleaf
+</footer>
+
+</body>
+</html>
