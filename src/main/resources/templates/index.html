@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabeza('Inicio')}"></head>
+<body>
+<header th:replace="~{fragments/plantilla :: menu('inicio')}"></header>
+
+<main class="contenedor">
+    <section class="portada">
+        <h1>Floristería Bloom</h1>
+        <p>Clientes, flores, pedidos y pagos en un solo lugar</p>
+    </section>
+
+    <div th:replace="~{fragments/plantilla :: alertas}"></div>
+
+    <section class="resumen">
+        <a th:href="@{/clientes}">
+            <div class="tarjeta">
+                <div class="icono">👩‍🌾</div>
+                <div class="numero" th:text="${totalClientes} ?: '–'">0</div>
+                <div>Clientes activos</div>
+            </div>
+        </a>
+        <a th:href="@{/flores}">
+            <div class="tarjeta">
+                <div class="icono">🌷</div>
+                <div class="numero" th:text="${totalFlores} ?: '–'">0</div>
+                <div>Flores en catálogo</div>
+            </div>
+        </a>
+        <a th:href="@{/pedidos}">
+            <div class="tarjeta">
+                <div class="icono">💐</div>
+                <div class="numero">→</div>
+                <div>Pedidos y pagos</div>
+            </div>
+        </a>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/plantilla :: pie}"></footer>
+</body>
+</html>
