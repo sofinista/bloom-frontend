@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabeza('Clientes')}"></head>
+<body>
+<header th:replace="~{fragments/plantilla :: menu('clientes')}"></header>
+
+<main class="contenedor">
+    <div class="encabezado">
+        <h1>Clientes</h1>
+        <a th:href="@{/clientes/nuevo}" class="boton">+ Nuevo cliente</a>
+    </div>
+
+    <div th:replace="~{fragments/plantilla :: alertas}"></div>
+
+    <div class="tarjeta tabla-scroll">
+        <table>
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cliente : ${clientes}">
+                <td th:text="${cliente.nombre}">Laura Gómez</td>
+                <td th:text="${cliente.tipoDocumento + ' ' + cliente.numeroDocumento}">CC 1037</td>
+                <td th:text="${cliente.telefono}">3001234567</td>
+                <td th:text="${cliente.correoElectronico} ?: '-'">laura@correo.com</td>
+                <td th:text="${cliente.direccion} ?: '-'">Calle 10</td>
+                <td>
+                    <div class="acciones">
+                        <a th:href="@{/clientes/editar/{id}(id=${cliente.idCliente})}" class="boton boton-borde boton-chico">Editar</a>
+                        <form th:action="@{/clientes/eliminar/{id}(id=${cliente.idCliente})}" method="post"
+                              onsubmit="return confirm('¿Eliminar este cliente?');">
+                            <button type="submit" class="boton boton-peligro boton-chico">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(clientes)}">
+                <td colspan="6" class="vacio">No hay clientes registrados.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/plantilla :: pie}"></footer>
+</body>
+</html>
