@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabeza('Flores')}"></head>
+<body>
+<header th:replace="~{fragments/plantilla :: menu('flores')}"></header>
+
+<main class="contenedor">
+    <div class="encabezado">
+        <h1>Flores</h1>
+        <a th:href="@{/flores/nueva}" class="boton">+ Nueva flor</a>
+    </div>
+
+    <div th:replace="~{fragments/plantilla :: alertas}"></div>
+
+    <div class="tarjeta tabla-scroll">
+        <table>
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Color</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Sumar o restar stock</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="flor : ${flores}">
+                <td th:text="${flor.nombre}">Rosa</td>
+                <td><span class="etiqueta" th:text="${flor.color}">Rojo</span></td>
+                <td th:text="'$ ' + ${#numbers.formatDecimal(flor.precioUnitario, 1, 'POINT', 0, 'COMMA')}">$ 3.500</td>
+                <td th:text="${flor.stock}">50</td>
+                <td>
+                    <form th:action="@{/flores/stock/{id}(id=${flor.idFlor})}" method="post" class="en-linea">
+                        <input type="number" name="cantidad" required placeholder="+10 / -5">
+                        <button type="submit" class="boton boton-verde boton-chico">Aplicar</button>
+                    </form>
+                </td>
+                <td>
+                    <div class="acciones">
+                        <a th:href="@{/flores/editar/{id}(id=${flor.idFlor})}" class="boton boton-borde boton-chico">Editar</a>
+                        <form th:action="@{/flores/eliminar/{id}(id=${flor.idFlor})}" method="post"
+                              onsubmit="return confirm('¿Eliminar esta flor?');">
+                            <button type="submit" class="boton boton-peligro boton-chico">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(flores)}">
+                <td colspan="6" class="vacio">No hay flores registradas.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/plantilla :: pie}"></footer>
+</body>
+</html>
