@@ -3,8 +3,20 @@ spring:
     name: bloomfront
   thymeleaf:
     cache: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            logger-level: full
+
 server:
   port: 9090
+
 bloom:
   api:
     url: "http://localhost:8080/bloom"
+
+logging:
+  level:
+    com.floristeria.bloomfront.webservicesclients: DEBUG
