@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/plantilla :: cabeza('Pedido')}"></head>
+<body>
+<header th:replace="~{fragments/plantilla :: menu('pedidos')}"></header>
+
+<main class="contenedor">
+    <div class="encabezado">
+        <h1 th:text="'Pedido #' + ${pedido.idPedido}">Pedido #1</h1>
+        <span class="etiqueta" th:classappend="'estado-' + ${pedido.estado}" th:text="${pedido.estado}">REGISTRADO</span>
+    </div>
+
+    <div th:replace="~{fragments/plantilla :: alertas}"></div>
+
+    <div class="tarjeta">
+        <h2>Datos del pedido</h2>
+        <div class="datos">
+            <div><span>Cliente</span><strong th:text="${nombreCliente}">Laura</strong></div>
+            <div><span>Registrado</span><strong th:text="${#temporals.format(pedido.fechaRegistro, 'dd/MM/yyyy HH:mm')}">-</strong></div>
+            <div><span>Entrega</span><strong th:text="${#temporals.format(pedido.fechaHoraEntrega, 'dd/MM/yyyy HH:mm')}">-</strong></div>
+            <div><span>Ocasión</span><strong th:text="${pedido.ocasion} ?: '-'">-</strong></div>
+            <div><span>Dirección</span><strong th:text="${pedido.direccionEntrega}">-</strong></div>
+            <div><span>Total</span><strong th:text="'$ ' + ${#numbers.formatDecimal(pedido.valorTotal, 1, 'POINT', 0, 'COMMA')}">$ 0</strong></div>
+            <div th:if="${pedido.fechaEntregaReal != null}"><span>Entregado el</span>
+                <strong th:text="${#temporals.format(pedido.fechaEntregaReal, 'dd/MM/yyyy HH:mm')}">-</strong></div>
+        </div>
+    </div>
+
+    <div class="tarjeta">
+        <h2>Cambiar estado</h2>
+        <div class="acciones" th:if="${!#lists.isEmpty(siguientes)}">
+            <form th:each="s : ${siguientes}" th:action="@{/pedidos/{id}/estado(id=${pedido.idPedido})}" method="post">
+                <input type="hidden" name="estado" th:value="${s}">
+                <button type="submit" class="boton"
+                        th:classappend="${s == 'CANCELADO'} ? 'boton-peligro' : ''"
+                        th:text="'Pasar a ' + ${s}">Pasar a LISTO</button>
+            </form>
+        </div>
+        <p th:if="${#lists.isEmpty(siguientes)}" class="vacio">Este pedido ya no cambia de estado.</p>
+    </div>
+
+    <div class="tarjeta tabla-scroll">
+        <h2>Arreglos</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Tamaño</th>
+                <th>Colores</th>
+                <th>Descripción</th>
+                <th>Valor</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${pedido.arreglos}">
+                <td th:text="${a.tipoArreglo}">Ramo</td>
+                <td th:text="${a.tamano} ?: '-'">GRANDE</td>
+                <td th:text="${a.colores} ?: '-'">Rosado</td>
+                <td th:text="${a.descripcion} ?: '-'">12 rosas</td>
+                <td th:text="'$ ' + ${#numbers.formatDecimal(a.valorUnitario, 1, 'POINT', 0, 'COMMA')}">$ 85.000</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tarjeta">
+        <h2>Tarjeta de dedicatoria</h2>
+        <p th:if="${pedido.tarjeta != null}">
+            “<span th:text="${pedido.tarjeta.mensaje}">Mensaje</span>”
+            <span th:if="${pedido.tarjeta.remitente != null}" th:text="'— ' + ${pedido.tarjeta.remitente}">— Remitente</span>
+        </p>
+        <p th:if="${pedido.tarjeta == null}" class="vacio">Este pedido no tiene tarjeta.</p>
+        <form th:action="@{/pedidos/{id}/tarjeta(id=${pedido.idPedido})}" method="post" class="formulario"
+              th:if="${pedido.estado != 'ENTREGADO' and pedido.estado != 'CANCELADO'}">
+            <div class="campo campo-ancho">
+                <label for="mensajeTarjeta">Mensaje</label>
+                <textarea id="mensajeTarjeta" name="mensajeTarjeta" maxlength="200" rows="2" required
+                          th:text="${pedido.tarjeta != null} ? ${pedido.tarjeta.mensaje} : ''"></textarea>
+            </div>
+            <div class="campo">
+                <label for="remitenteTarjeta">De parte de</label>
+                <input type="text" id="remitenteTarjeta" name="remitenteTarjeta" maxlength="80"
+                       th:value="${pedido.tarjeta != null} ? ${pedido.tarjeta.remitente} : ''">
+            </div>
+            <div class="botones-formulario">
+                <button type="submit" class="boton boton-verde"
+                        th:text="${pedido.tarjeta != null} ? 'Cambiar tarjeta' : 'Agregar tarjeta'">Guardar tarjeta</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tarjeta">
+        <h2>Pagos</h2>
+        <div class="datos" th:if="${saldo != null}">
+            <div><span>Total</span><strong th:text="'$ ' + ${#numbers.formatDecimal(saldo.total, 1, 'POINT', 0, 'COMMA')}">$ 0</strong></div>
+            <div><span>Pagado</span><strong th:text="'$ ' + ${#numbers.formatDecimal(saldo.pagado, 1, 'POINT', 0, 'COMMA')}">$ 0</strong></div>
+            <div><span>Saldo pendiente</span><strong th:text="'$ ' + ${#numbers.formatDecimal(saldo.saldo, 1, 'POINT', 0, 'COMMA')}">$ 0</strong></div>
+        </div>
+
+        <div class="tabla-scroll">
+            <table style="margin-top: 16px">
+                <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Método</th>
+                    <th>Monto</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pago : ${pagos}">
+                    <td th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy HH:mm')}">-</td>
+                    <td th:text="${pago.metodo}">EFECTIVO</td>
+                    <td th:text="'$ ' + ${#numbers.formatDecimal(pago.monto, 1, 'POINT', 0, 'COMMA')}">$ 0</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pagos)}">
+                    <td colspan="3" class="vacio">Todavía no hay pagos.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <form th:action="@{/pagos/guardar}" method="post" class="formulario" style="margin-top: 16px"
+              th:if="${pedido.estado != 'CANCELADO' and saldo != null and saldo.saldo > 0}">
+            <input type="hidden" name="idPedido" th:value="${pedido.idPedido}">
+            <div class="campo">
+                <label for="monto">Monto del abono</label>
+                <input type="number" id="monto" name="monto" min="1" step="any" required placeholder="50000">
+            </div>
+            <div class="campo">
+                <label for="metodo">Método</label>
+                <select id="metodo" name="metodo" required>
+                    <option value="EFECTIVO">Efectivo</option>
+                    <option value="TARJETA">Tarjeta</option>
+                    <option value="TRANSFERENCIA">Transferencia</option>
+                </select>
+            </div>
+            <div class="botones-formulario">
+                <button type="submit" class="boton">Registrar pago</button>
+            </div>
+        </form>
+    </div>
+
+    <a th:href="@{/pedidos}" class="boton boton-borde">← Volver a pedidos</a>
+</main>
+
+<footer th:replace="~{fragments/plantilla :: pie}"></footer>
+</body>
+</html>
